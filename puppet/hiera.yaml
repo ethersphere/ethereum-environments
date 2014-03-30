@@ -1,0 +1,8 @@
+---
+:hierarchy:
+        - "%{::environment}"
+        - common
+:backends:
+        - yaml
+:yaml:
+     :datadir: "puppet/hiera"

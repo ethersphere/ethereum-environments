@@ -1,0 +1,42 @@
+{
+    "variables": {
+        "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+        "aws_secret_key": "{{env `AWS_SECRET_KEY`}}",
+        "aws_security_group_id": "{{env `AWS_SECURITY_GROUP_ID`}}",
+        "rootdir": ".",
+        "nodename": "ethereum",
+        "source_ami": "ami-335da344",
+        "instance_type": "m1.small"
+    },
+
+    "builders": [{
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "secret_key": "{{user `aws_secret_key`}}",
+        "region": "eu-west-1",
+        "source_ami": "{{user `source_ami`}}",
+        "instance_type": "{{user `instance_type`}}",
+        "ssh_username": "ubuntu",
+        "ami_name": "{{user `nodename`}} {{timestamp}}",
+        "security_group_id": "{{user `aws_security_group_id`}}"
+    }],
+
+    // "provisioners": [{
+    //     "type": "shell",
+    //     "inline": [
+    //         "sleep 30",
+    //         "sudo apt-get update",
+    //         "sudo apt-get install -y puppet"
+    //     ]
+    // }, {
+    //     "type": "puppet-masterless",
+    //     "manifest_file": "{{user `rootdir`}}/puppet/manifests/{{user `nodename`}}.pp",
+    //     "module_paths": ["{{user `rootdir`}}/puppet/modules"],
+    //     "manifest_dir": "{{user `rootdir`}}/puppet/manifests"
+    // }],
+    "post-processors": [{
+        "type": "vagrant",
+        "keep_input_artifact": true,
+        "output": "{{user `rootdir`}}/boxes/{{user `nodename`}}.aws.box"
+    }]
+}

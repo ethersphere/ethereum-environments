@@ -1,0 +1,5 @@
+{
+    "nodename": "cpp-ethereum",
+    "source_ami": "ami-335da344",
+    "instance_type": "m1.small"
+}

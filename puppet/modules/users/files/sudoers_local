@@ -1,0 +1,2 @@
+Cmnd_Alias WEB = /bin/mkdir, /bin/cat, /bin/ls, /bin/tail, /usr/bin/service
+# ethereum ALL=(ALL) NOPASSWD: WEB

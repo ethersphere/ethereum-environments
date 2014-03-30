@@ -1,0 +1,4 @@
+---
+# variables specific to aws environment to overwrite common
+# need a placeholder data value here otherwise hiera complains
+environment: virtualbox

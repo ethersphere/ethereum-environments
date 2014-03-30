@@ -1,0 +1,8 @@
+.vagrant
+.DS_Store
+tmp
+aws.env
+puppet/modules/users/files/.ssh/authorized_keys
+packer_cache
+boxes/*
+doc/local
