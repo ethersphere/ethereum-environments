@@ -1,12 +1,24 @@
 ---
 # keys containing colon must be single quoted
 # string values must be double quoted (if contain eg colon)
+
 'go-ethereum::config_file': "/etc/default/go-ethereum"
-'go-ethereum::outbound_port': 30303
-'go-ethereum::data_dir': "/usr/local/share/go-ethereum/data"
 'go-ethereum::log_file': "/var/log/go-ethereum/go-ethereum.log"
 'go-ethereum::pid_file': "/var/run/go-ethereum.pid"
 'go-ethereum::cli_path': "/usr/local/bin/go-ethereum"
+'go-ethereum::data_dir': "/usr/local/share/go-ethereum/data"
+'go-ethereum::outbound_port': 30303
 'go-ethereum::max_peer': 5
+
+'cpp-ethereum::config_file': "/etc/default/cpp-ethereum"
+'cpp-ethereum::log_file': "/var/log/cpp-ethereum/cpp-ethereum.log"
+'cpp-ethereum::pid_file': "/var/run/cpp-ethereum.pid"
+'cpp-ethereum::cli_path': "/usr/local/bin/eth"
+'cpp-ethereum::data_dir': "/usr/local/share/cpp-ethereum/data"
+'cpp-ethereum::outbound_port': 30303
+'cpp-ethereum::inbound_port': 30303
+'cpp-ethereum::max_peer': 5
+'cpp-ethereum::verbosity': 9
+'cpp-ethereum::mining': on
 
 'users::ubuntu': true
