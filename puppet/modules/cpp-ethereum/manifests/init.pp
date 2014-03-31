@@ -9,6 +9,7 @@ class cpp-ethereum {
     'libtool',
     'unzip',
     'yasm',
+    'libncurses-dev'
     'libgmp-dev',
     'libgmp3-dev',
     # 'libcrypto++-dev', # only 5.6.1
@@ -48,7 +49,7 @@ mkdir cryptopp562
 cd cryptopp562
 wget http://www.cryptopp.com/cryptopp562.zip
 unzip -a cryptopp562.zip
-CXX="g++ -fPIC" make
+CXX='g++ -fPIC' make
 make dynamic
 make install || echo # cos no exe built
 ",
