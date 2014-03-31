@@ -1,6 +1,7 @@
 class cpp-ethereum {
 
   include system_service
+  include ufw
 
   $deps = [
     'build-essential',
@@ -130,11 +131,13 @@ VERBOSITY=${verbosity}
     require => [File[$config_file],Exec['build']]
   }
 
+  ufw::allow { 'open-port-ethereum': port => $inbound_port }
+
   service { $ethereum:
     enable => true,
     ensure => running,
     require => System_service::Make[$ethereum],
-    subscribe => File[$config_file]
+    subscribe => [File[$config_file],Ufw::Allow['open-port-go-ethereum']]
   }
 
 }
