@@ -136,8 +136,8 @@ VERBOSITY=${verbosity}
   service { $ethereum:
     enable => true,
     ensure => running,
-    require => System_service::Make[$ethereum],
-    subscribe => [File[$config_file],Ufw::Allow['open-port-go-ethereum']]
+    require => [System_service::Make[$ethereum],Ufw::Allow['open-port-go-ethereum']],
+    subscribe => File[$config_file]
   }
 
 }
