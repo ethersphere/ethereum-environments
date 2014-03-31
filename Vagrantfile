@@ -17,6 +17,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |vagrant|
     # config.vm.network :public_network, ip: '192.168.33.10'
     # config.vm.network :forwarded_port, guest: 80, host: 8080
     # config.vm.network :forwarded_port, guest: 80, host: 8080
+    config.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, '--memory', 2048]
+    end
     config.vm.provision :puppet do |puppet|
       puppet.options        = "--verbose"
       puppet.facter = { "fqdn" => "local.leaf", "build" => "head", "hostname" => node, "environment" => 'virtualbox' }
