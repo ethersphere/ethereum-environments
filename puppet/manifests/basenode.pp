@@ -2,16 +2,15 @@ node basenode {
 
   # APT setup with security updates
 
-  include apt
+  # include apt
 
-  apt::unattended_upgrade { 'enable-unattended-upgrades': }
+  # apt::unattended_upgrade { 'enable-unattended-upgrades': }
 
-  # Enable firewall and close all ports other than 22 and 30303
+  # Enable firewall and close all ports other 22 and 80
 
   include ufw
 
   ufw::allow { 'open-port-22': port => 22 }
-  ufw::allow { 'open-port-30303': port => 30303 }
   ufw::allow { 'open-port-80': port => 80 }
 
   # Fail2ban with ssh protection

@@ -2,6 +2,7 @@ class go-ethereum {
 
   include golang
   include system_service
+  include ufw
 
   # package dependencies
 
@@ -39,6 +40,7 @@ class go-ethereum {
   $pid_file = hiera('go-ethereum::pid_file')
   $data_dir = hiera('go-ethereum::data_dir')
   $outbound_port = hiera('go-ethereum::outbound_port')
+  $inbound_port = hiera('go-ethereum::inbound_port') # only used to open port
   $max_peer = hiera('go-ethereum::max_peer')
   $config_file = hiera('go-ethereum::config_file')
 
@@ -94,11 +96,15 @@ MAX_PEER=${max_peer}
     require => [File[$config_file],Golang::Install[$ethereum]]
   }
 
+ }
+
+  ufw::allow { 'open-port-ethereum': port => $inbound_port }
+
   service { $ethereum:
     enable => true,
     ensure => running,
     require => System_service::Make[$ethereum],
-    subscribe => File[$config_file]
+    subscribe => [File[$config_file],Ufw::Allow['open-port-ethereum']
   }
 
 }
