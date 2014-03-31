@@ -26,6 +26,8 @@ class go-ethereum {
   $ethereum = 'go-ethereum'
   $daemon_path = hiera('go-ethereum::cli_path')
 
+  # note this installs the master branch
+  # I have no idea how go can get away without version management - it's a mystery
   golang::install { $ethereum:
     source => $source,
     binary => 'ethereum',
@@ -60,8 +62,9 @@ MAX_PEER=${max_peer}
     notify => Service[$ethereum],
   }
 
-  # install and start service
+  # install service
   # note: this system service file is ideally part of the deb package
+  # for stable release
 
   # USE_SEED => -seed
   # START_MINING => -m
