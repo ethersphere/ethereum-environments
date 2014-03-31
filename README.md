@@ -3,6 +3,10 @@ ethereum-environments
 
 This projects provides the environments that allows you to create virtual machines (both remote and local) that run the various kinds of ethereum clients. Basically it allows you to build a full ethereum node with one command. 
 
+The two node types currently supported are the cpp and go implementations of the ethereum non-gui client. These are installed from HEAD on the master branch and run as init.d system services with configurable parameters.
+
+Support for other branches is coming. 
+
 ## Disclaimer
 
 The ethereum project is in inception phase. All software and tools being developed are alpha. Adjust your expectations.
@@ -166,15 +170,20 @@ An additional benefit is that now developers can use the exact same environment 
 ### Vision of a third layer for network testing 
 
 Once the node VMs are created, their clones can be launched with automated scripts resulting in ethereum testnets composed of nodes with uniform and mixed implementations.
-These isolated testnets could then be used for integration testing and benchmarking: in one test round consisting of X blocks a suite of precanned transactions and contracts would be fired at the testnet and checked for correctness of operation as well as for expected measures on various network statistics. 
+These isolated testnets could then be used for integration testing and benchmarking: in one test round consisting of X blocks a suite of precanned transactions and contracts would be fired at the testnet and checked for correctness of operation as well as for expected measures on various network statistics.
 
 ### Implementation notes
 
 - hiera calls should not use defaults, better style documenting all hiera variables by giving the default in hiera/common.yaml
 
+## Troubleshooting
+
+- cpp-ethereum compilation needs a lot of memory. If you get a mysterious `c++: internal compiler error: Killed (program cc1plus)` error, try increase your VM-s memory. In Vagrant, a generous 2GB is requested since the default 512MB is not enough.
+
 ## Credits
 * https://github.com/zelig
 * https://github.com/valzav
+* https://github.com/caktux
 
 #TODO
 * 
