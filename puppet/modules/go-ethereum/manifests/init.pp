@@ -98,13 +98,13 @@ MAX_PEER=${max_peer}
 
  }
 
-  ufw::allow { 'open-port-ethereum': port => $inbound_port }
+  ufw::allow { 'open-port-go-ethereum': port => $inbound_port }
 
   service { $ethereum:
     enable => true,
     ensure => running,
     require => System_service::Make[$ethereum],
-    subscribe => [File[$config_file],Ufw::Allow['open-port-ethereum']
+    subscribe => [File[$config_file],Ufw::Allow['open-port-go-ethereum']]
   }
 
 }
