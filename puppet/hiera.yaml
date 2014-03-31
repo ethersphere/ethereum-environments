@@ -5,4 +5,4 @@
 :backends:
         - yaml
 :yaml:
-     :datadir: "puppet/hiera"
+     :datadir: "/usr/local/share/hiera"
