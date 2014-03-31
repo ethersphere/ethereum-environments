@@ -1,8 +1,9 @@
 class go-ethereum {
 
-  include apt
   include golang
   include system_service
+
+  # package dependencies
 
   # this is the same as include but allows parameters
   # if specific version of go needed:
@@ -20,6 +21,7 @@ class go-ethereum {
     ensure => present,
   }
 
+  # compile from source
   $source = 'github.com/ethereum/go-ethereum/ethereum'
   $ethereum = 'go-ethereum'
   $daemon_path = hiera('go-ethereum::cli_path')
@@ -30,19 +32,8 @@ class go-ethereum {
     destination => $daemon_path,
   }
 
+  # install config file for go-ethereumm system service
   $log_file = hiera('go-ethereum::log_file')
-
-  #hack: doesnt work...
-#   $daemon_wrapper_path = "${daemon_path}.sh"
-
-#   file { $daemon_wrapper_path:
-#     ensure => present,
-#     mode => 755,
-#     content => "#!/bin/bash
-# ${daemon_path} \$*>> $log_file 2>&1",
-#     require => Golang::Install[$ethereum]
-#   }
-
   $pid_file = hiera('go-ethereum::pid_file')
   $data_dir = hiera('go-ethereum::data_dir')
   $outbound_port = hiera('go-ethereum::outbound_port')
@@ -69,6 +60,9 @@ MAX_PEER=${max_peer}
     notify => Service[$ethereum],
   }
 
+  # install and start service
+  # note: this system service file is ideally part of the deb package
+
   # USE_SEED => -seed
   # START_MINING => -m
   # log file not supported yet?
@@ -94,7 +88,7 @@ MAX_PEER=${max_peer}
     config_file => $config_file,
     daemon_path => $daemon_wrapper_path,
     daemon_args => $daemon_args,
-    require => [File[$config_file],File[$daemon_wrapper_path]]
+    require => [File[$config_file],Golang::Install[$ethereum]]
   }
 
   service { $ethereum:
