@@ -29,13 +29,13 @@ cpp:
 
     packer build -var-file=packer/nodes/cpp-ethereum.json packer/aws-template.json
     vagrant box add cpp-ethereum boxes/cpp-ethereum.aws.box
-    ROLES=cpp-ethereum vagrant up aws-cpp-ethereum --provider=aws    
+    ROLES=cpp-ethereum vagrant up aws-cpp-ethereum --provider=aws  --no-provision   
 
 go:
 
     packer build -var-file=packer/nodes/go-ethereum.json packer/aws-template.json
     vagrant box add go-ethereum boxes/go-ethereum.aws.box
-    ROLES=go-ethereum vagrant up aws-go-ethereum --provider=aws    
+    ROLES=go-ethereum vagrant up aws-go-ethereum --provider=aws  --no-provision
 
 ### local vm:
 
@@ -190,8 +190,9 @@ Once you got the ami built with packer, you add the box:
 
 Now you can use the provided multi-machine `Vagrantfile` to boot up temporary instances for any node. (Note the extra `--provider=aws`):
 
-    ROLES=go-ethereum vagrant up aws-go-ethereum --provider=aws
+    ROLES=go-ethereum vagrant up aws-go-ethereum --provider=aws  --no-provision
 
+If your packer build was successful, you can safely use the ` --no-provision` option.
 You can ssh into your remote instance (if you added your aws public key to the ssh authorized key file):
 
     ROLES=go-ethereum vagrant ssh aws-go-ethereum
