@@ -52,8 +52,9 @@ wget http://www.cryptopp.com/cryptopp562.zip;
 unzip -a cryptopp562.zip;
 CXX='g++ -fPIC' make;
 make dynamic;
-make install || echo # cos no exe built
+sudo make install || echo # cos no exe built
 ",
+    timout => 0, # this can take looong
     require => [Package[$deps],File[$download_dir]]
   }
 
@@ -63,6 +64,7 @@ make install || echo # cos no exe built
   exec { 'build':
     cwd => $build_path,
     command => "cmake .. ${build_flags}; make; make install",
+    timout => 0, # this can take looong
     require => [Package[$deps],Exec['cryptopp']],
     notify => Service[$ethereum],
   }
