@@ -54,7 +54,7 @@ CXX='g++ -fPIC' make;
 make dynamic;
 sudo make install || echo # cos no exe built
 ",
-    timout => 0, # this can take looong
+    timeout => 0, # this can take looong
     require => [Package[$deps],File[$download_dir]]
   }
 
@@ -64,7 +64,7 @@ sudo make install || echo # cos no exe built
   exec { 'build':
     cwd => $build_path,
     command => "cmake .. ${build_flags}; make; make install",
-    timout => 0, # this can take looong
+    timeout => 0, # this can take looong
     require => [Package[$deps],Exec['cryptopp']],
     notify => Service[$ethereum],
   }
