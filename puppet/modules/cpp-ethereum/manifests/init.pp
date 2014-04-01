@@ -12,7 +12,7 @@ class cpp-ethereum {
     'libtool',
     'unzip',
     'yasm',
-    'libncurses-dev',
+    'libncurses5-dev',
     'libgmp-dev',
     'libgmp3-dev',
     # 'libcrypto++-dev', # only 5.6.1
@@ -54,7 +54,7 @@ CXX='g++ -fPIC' make;
 make dynamic;
 make install || echo # cos no exe built
 ",
-    require => File[$download_dir]
+    require => [Package[$deps],File[$download_dir]]
   }
 
   $ethereum = 'cpp-ethereum'
