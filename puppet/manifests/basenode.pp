@@ -11,7 +11,7 @@ node basenode {
   include ufw
 
   ufw::allow { 'open-port-22': port => 22 }
-  ufw::allow { 'open-port-80': port => 80 }
+  # ufw::allow { 'open-port-80': port => 80 }
 
   # Fail2ban with ssh protection
 
