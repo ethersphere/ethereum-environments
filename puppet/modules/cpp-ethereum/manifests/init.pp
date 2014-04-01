@@ -131,12 +131,12 @@ VERBOSITY=${verbosity}
     require => [File[$config_file],Exec['build']]
   }
 
-  ufw::allow { 'open-port-ethereum': port => $inbound_port }
+  ufw::allow { 'open-port-cpp-ethereum': port => $inbound_port }
 
   service { $ethereum:
     enable => true,
     ensure => running,
-    require => [System_service::Make[$ethereum],Ufw::Allow['open-port-go-ethereum']],
+    require => [System_service::Make[$ethereum],Ufw::Allow['open-port-cpp-ethereum']],
     subscribe => File[$config_file]
   }
 
