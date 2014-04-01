@@ -21,19 +21,29 @@
         "security_group_id": "{{user `aws_security_group_id`}}"
     }],
 
-    // "provisioners": [{
-    //     "type": "shell",
-    //     "inline": [
-    //         "sleep 30",
-    //         "sudo apt-get update",
-    //         "sudo apt-get install -y puppet"
-    //     ]
-    // }, {
-    //     "type": "puppet-masterless",
-    //     "manifest_file": "{{user `rootdir`}}/puppet/manifests/{{user `nodename`}}.pp",
-    //     "module_paths": ["{{user `rootdir`}}/puppet/modules"],
-    //     "manifest_dir": "{{user `rootdir`}}/puppet/manifests"
-    // }],
+    "provisioners": [{
+        "type": "file",
+        "source": "puppet/hiera",
+        "destination": "/tmp"
+    }, {
+        "type": "shell",
+        "inline": [
+            "sudo apt-get -y install puppet"
+        ]
+    }, {
+        "type": "puppet-masterless",
+        "manifest_file": "{{user `rootdir`}}/puppet/manifests/{{user `nodename`}}.pp",
+        "module_paths": ["{{user `rootdir`}}/puppet/modules"],
+        "manifest_dir": "{{user `rootdir`}}/puppet/manifests",
+        "hiera_config_path": "{{user `rootdir`}}/puppet/hiera.yaml",
+        "staging_directory": "/tmp/packer-puppet/",
+        "facter": {
+            "fqdn": "",
+            "build": "head",
+            "hostname": "{{user `nodename`}}",
+            "environment": "aws"
+        }
+    }],
     "post-processors": [{
         "type": "vagrant",
         "keep_input_artifact": true,
