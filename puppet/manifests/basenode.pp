@@ -4,7 +4,7 @@ node basenode {
 
   include apt
 
-  # apt::unattended_upgrade { 'enable-unattended-upgrades': }
+    apt::unattended_upgrade { 'enable-unattended-upgrades': }
 
   # Enable firewall and close all ports other 22 and 80
 
