@@ -110,6 +110,12 @@ The multi-machine `Vagrantfile` includes a section for local vms using virtualbo
 
     ROLES=go-ethereum vagrant up virtualbox-go-ethereum
 
+Perform https://github.com/ethersphere/ethereum-environments#setting-ssh-access-via-authorized_keys
+
+Then:
+
+    ROLES=go-ethereum vagrant ssh virtualbox-go-ethereum
+
 ## remote VM
 
 You can create remote vms on amazon ec2 (called ami-s). This requires packer installed as well as having an amazon aws account. The setup is detailed below.
