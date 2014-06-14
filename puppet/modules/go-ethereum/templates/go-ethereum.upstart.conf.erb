@@ -1,0 +1,11 @@
+description "go-ethereum service"
+
+start on runlevel [23]
+stop on shutdown
+
+setuid ethereum
+setgid ethereum
+
+exec <%= @daemon_path %> -mine -maxpeer <%= @max_peer %> -port <%= @outbound_port %> -logfile <%= @log_file %>
+
+respawn
