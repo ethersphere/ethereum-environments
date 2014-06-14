@@ -1,0 +1,10 @@
+description "cpp-ethereum service"
+
+start on runlevel [23]
+stop on shutdown
+
+setuid ethereum
+setgid ethereum
+
+exec <%= @daemon_path %> -d <%= @data_dir %> -o full -m on -x <%= @max_peer %> -p <%= @outbound_port %> -l <%= @inbound_port %> -v <%= @verbosity %>
+respawn
