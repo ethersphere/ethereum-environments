@@ -12,15 +12,33 @@ class go-ethereum {
   #   version =>  '2:1.2.1-2ubuntu1'
   # }
 
-  $deps = ['libgmp3-dev',
+  # $ppa='ppa:ubuntu-sdk-team/ppa'
+
+  # apt::ppa { $ppa }
+
+  $deps = [
+      'libgmp3-dev',
       'pkg-config',
       'mercurial',
-      'libleveldb1'
+      'libleveldb1',
+      'libreadline6-dev'
       ]
+
+  # $gui_deps = [
+  #     'ubuntu-sdk',
+  #     'qtbase5-private-dev',
+  #     'qtdeclarative5-private-dev',
+  #     'libqt5opengl5-dev'
+  #     ]
 
   package { [$deps]:
     ensure => present,
   }
+
+  # package { [$gui_deps]:
+  #   ensure => present,
+  #   require => Apt::Ppa[$ppa]
+  # }
 
   # compile from source
   $source = 'github.com/ethereum/go-ethereum/ethereum'
@@ -33,6 +51,7 @@ class go-ethereum {
     source => $source,
     binary => 'ethereum',
     destination => $daemon_path,
+    require => Package[$deps]
   }
 
   # install config file for go-ethereumm system service
