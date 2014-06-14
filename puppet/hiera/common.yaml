@@ -2,16 +2,24 @@
 # keys containing colon must be single quoted
 # string values must be double quoted (if contain eg colon)
 
-'go-ethereum::log_file': "/home/ethereum/.ethereum/go-ethereum.log"
+'go-ethereum::dirs': [
+    '/var/log/go-ethereum',
+    '/usr/local/share/go-ethereum'
+ ]
+'go-ethereum::log_file': "/var/log/go-ethereum/go-ethereum.log"
 'go-ethereum::cli_path': "/usr/local/bin/go-ethereum"
-'go-ethereum::data_dir': "/usr/local/share/go-ethereum/data" # unused
+'go-ethereum::data_dir': "/usr/local/share/go-ethereum" # unused
 'go-ethereum::inbound_port': 30303 # only used to open port with ufw
 'go-ethereum::outbound_port': 30303
 'go-ethereum::max_peer': 5
 
+'cpp-ethereum::dirs': [
+    '/var/log/cpp-ethereum',
+    '/usr/local/share/cpp-ethereum'
+ ]
 'cpp-ethereum::log_file': "/var/log/cpp-ethereum/cpp-ethereum.log"
 'cpp-ethereum::cli_path': "/usr/local/bin/eth"
-'cpp-ethereum::data_dir': "/usr/local/share/cpp-ethereum/data"
+'cpp-ethereum::data_dir': "/usr/local/share/cpp-ethereum"
 'cpp-ethereum::outbound_port': 30303
 'cpp-ethereum::inbound_port': 30303
 'cpp-ethereum::max_peer': 5

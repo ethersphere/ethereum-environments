@@ -54,10 +54,18 @@ class go-ethereum {
 
   # config variables for go-ethereum upstart service conf file
   $log_file = hiera('go-ethereum::log_file')
-  $data_dir = hiera('go-ethereum::data_dir')
+  $data_dir = hiera('go-ethereum::data_dir') #-datadir only in develop as o 2014-06-14
   $outbound_port = hiera('go-ethereum::outbound_port')
   $inbound_port = hiera('go-ethereum::inbound_port') # only used to open port
   $max_peer = hiera('go-ethereum::max_peer')
+  $dirs = hiera('go-ethereum::dirs')
+
+  file { $dirs:
+    ensure => directory,
+    owner  => ethereum,
+    group  => ethereum,
+    mode   => "0640",
+  }
 
   file { "/etc/init/go-ethereum.conf":
     ensure    => "file",
@@ -78,6 +86,7 @@ class go-ethereum {
     provider  => "upstart",
     require   => [
       File["/etc/init.d/go-ethereum"],
+      File[$dirs],
       Ufw::Allow['open-port-go-ethereum']
     ],
     subscribe => File["/etc/init.d/go-ethereum"]

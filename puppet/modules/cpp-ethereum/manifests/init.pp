@@ -1,6 +1,5 @@
 class cpp-ethereum {
 
-  include system_service
   include ufw
 
   $deps = [
@@ -18,12 +17,25 @@ class cpp-ethereum {
     # 'libcrypto++-dev', # only 5.6.1
     'libboost-all-dev',  # 1.54
     'libleveldb-dev',
-    'libminiupnpc-dev'
+    'libminiupnpc-dev',
+    'libreadline-dev',
+    'libcurl4-openssl-dev'
   ]
+
+  # $gui_deps = [
+  #   'qtbase5-dev',
+  #   'qt5-default',
+  #   'qtdeclarative5-dev',
+  #   'libqt5webkit5-dev'
+  # ]
 
   package { [$deps]:
     ensure => latest,
   }
+
+  # package { [$gui_deps]:
+  #   ensure => latest,
+  # }
 
   $download_dir = "/tmp/"
 
@@ -66,80 +78,48 @@ sudo make install || echo # cos no exe built
     command => "cmake .. ${build_flags}; make; make install",
     timeout => 0, # this can take looong
     require => [Package[$deps],Exec['cryptopp']],
-    notify => Service[$ethereum],
+    notify => Service['cpp-ethereum'],
   }
 
   $daemon_path = hiera('cpp-ethereum::cli_path')
-
-  # install config file for cpp-ethereumm system service
-  $config_file = hiera('cpp-ethereum::config_file')
   $log_file = hiera('cpp-ethereum::log_file')
-  $pid_file = hiera('cpp-ethereum::pid_file')
   $data_dir = hiera('cpp-ethereum::data_dir')
   $outbound_port = hiera('cpp-ethereum::outbound_port')
   $inbound_port = hiera('cpp-ethereum::inbound_port')
   $max_peer = hiera('cpp-ethereum::max_peer')
   $verbosity = hiera('cpp-ethereum::verbosity')
-  $mining = hiera('cpp-ethereum::mining')
+  $dirs = hiera('cpp-ethereum::dirs')
 
-  #https://github.com/ethereum/cpp-ethereum/wiki/Using-Ethereum-CLI-Client
-  file { $config_file:
-    ensure  => present,
-    owner   => root,
-    group   => root,
-    mode    => 644,
-    content  => "
-USER=ethereum
-LOG_FILE=${log_file}
-PID_FILE=${pid_file}
-MINING=${mining}
-DATA_DIR=${data_dir}
-OUTBOUND_PORT=${outbound_port}
-INBOUND_PORT=${inbound_port}
-MAX_PEER=${max_peer}
-VERBOSITY=${verbosity}
-# NODE_IP
-# REMOTE_IP
-# SECRET
-# ADDRESS",
-    notify => Service[$ethereum],
+  file { $dirs:
+    ensure => directory,
+    owner  => ethereum,
+    group  => ethereum,
+    mode   => "0640",
   }
 
-  # install service
-  # note: this system service file is ideally part of the deb package
-  # for stable release
+  file { "/etc/init/cpp-ethereum.conf":
+    ensure    => "file",
+    content   => template("${module_name}/cpp-ethereum.upstart.conf.erb"),
+    require => Exec['build']
+  }
 
-  # log file not supported yet?
-  # --logfile $LOG_FILE"
-  $daemon_args = '"-d $DATA_DIR -o full -m $MINING -x $MAX_PEER -p $OUTBOUND_PORT -l $INBOUND_PORT -v $VERBOSITY"'
-
-  $service_info = "
-### BEGIN INIT INFO
-# Provides:          ${ethereum}
-# Required-Start:    \$remote_fs \$syslog \$network
-# Required-Stop:     \$remote_fs \$syslog \$network
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Manages the ethereum node daemon
-# Description:       ethereum.org
-### END INIT INFO"
-
-  system_service::make { $ethereum:
-    service => $ethereum,
-    service_info => $service_info,
-    config_file => $config_file,
-    daemon_path => $daemon_path,
-    daemon_args => $daemon_args,
-    require => [File[$config_file],Exec['build']]
+  file { "/etc/init.d/cpp-ethereum":
+    ensure    => "link",
+    target    => "/lib/init/upstart-job",
+    require   => File["/etc/init/cpp-ethereum.conf"]
   }
 
   ufw::allow { 'open-port-cpp-ethereum': port => $inbound_port }
 
-  service { $ethereum:
-    enable => true,
-    ensure => running,
-    require => [System_service::Make[$ethereum],Ufw::Allow['open-port-cpp-ethereum']],
-    subscribe => File[$config_file]
+  service { "cpp-ethereum":
+    ensure    => "running",
+    provider  => "upstart",
+    require   => [
+      File["/etc/init.d/cpp-ethereum"],
+      File[$dirs],
+      Ufw::Allow['open-port-cpp-ethereum']
+    ],
+    subscribe => File["/etc/init.d/cpp-ethereum"]
   }
 
 }
