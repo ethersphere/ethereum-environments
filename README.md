@@ -54,7 +54,9 @@ go:
 * vagrant - http://www.vagrantup.com/ for local and remote 
 * vagrant plugins recommended: aws, vbguest
 
-Tested on OSX with Packer v0.5.2, Vagrant 1.5.1, vagrant-aws (0.4.1), virtualbox 4.3.8 (4.3.10 buggy on OSX), vagrant-vbguest (0.10.0)
+Tested on OSX with 
+* Packer v0.5.2, Vagrant 1.5.1, vagrant-aws (0.4.1), virtualbox 4.3.8 (4.3.10 buggy on OSX), vagrant-vbguest (0.10.0)
+* Packer v0.6.0, Vagrant 1.6.3, vagrant-aws (0.4.1), virtualbox 4.3.12 vagrant-vbguest (0.10.0)
 
 ### Linux
 
