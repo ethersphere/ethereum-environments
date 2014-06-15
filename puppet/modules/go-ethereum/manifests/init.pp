@@ -3,53 +3,60 @@ class go-ethereum {
   include golang
   include ufw
 
-  # package dependencies
-
-  # this is the same as include but allows parameters
-  # if specific version of go needed:
-  # class { 'golang':
-  #   version =>  '2:1.2.1-2ubuntu1'
-  # }
-
-  # $ppa='ppa:ubuntu-sdk-team/ppa'
-
-  # apt::ppa { $ppa }
-
   $deps = [
-      'libgmp3-dev',
-      'pkg-config',
-      'mercurial',
-      'libleveldb1',
-      'libreadline6-dev'
-      ]
+    'libgmp3-dev',
+    'pkg-config',
+    'mercurial',
+    'libleveldb1',
+    'libreadline6-dev'
+  ]
 
-  # $gui_deps = [
-  #     'ubuntu-sdk',
-  #     'qtbase5-private-dev',
-  #     'qtdeclarative5-private-dev',
-  #     'libqt5opengl5-dev'
-  #     ]
+  $gui_deps = [
+    'ubuntu-sdk',
+    'qtbase5-private-dev',
+    'qtdeclarative5-private-dev',
+    'libqt5opengl5-dev'
+  ]
 
   package { [$deps]:
     ensure => present,
   }
 
-  # package { [$gui_deps]:
-  #   ensure => present,
-  #   require => Apt::Ppa[$ppa]
-  # }
+  if ($gui == 'true') {
+    $ppa='ppa:ubuntu-sdk-team/ppa'
+    apt::ppa { $ppa: }
+    package { [$gui_deps]:
+      ensure => latest,
+      require => Apt::Ppa[$ppa]
+    }
+    $eth_deps = ["go-ethereum", "go-ethereal"]
+    golang::install { "go-ethereal":
+      source => 'github.com/ethereum/go-ethereum/ethereal',
+      binary => "ethereal",
+      destination => "/usr/local/bin/ethereal",
+      branch => $branch,
+      require => [Package[$deps, $gui_deps],Golang::Compile['eth-go']]
+    }
+  } else {
+    $eth_deps = "go-ethereum"
+  }
 
   # compile from source
-  $source = 'github.com/ethereum/go-ethereum/ethereum'
   $daemon_path = hiera('go-ethereum::cli_path')
 
-  # note this installs the master branch
+  golang::compile { "eth-go":
+    source => 'github.com/ethereum/eth-go',
+    branch => $branch,
+    require => Package[$deps]
+  }
+
   # I have no idea how go can get away without version management - it's a mystery
   golang::install { "go-ethereum":
-    source => $source,
+    source => 'github.com/ethereum/go-ethereum/ethereum',
     binary => "ethereum",
     destination => $daemon_path,
-    require => Package[$deps]
+    branch => $branch,
+    require => [Package[$deps],Golang::Compile['eth-go']]
   }
 
   # config variables for go-ethereum upstart service conf file
@@ -70,7 +77,7 @@ class go-ethereum {
   file { "/etc/init/go-ethereum.conf":
     ensure    => "file",
     content   => template("${module_name}/go-ethereum.upstart.conf.erb"),
-    require => Golang::Install["go-ethereum"]
+    require => Golang::Install[$eth_deps]
   }
 
   file { "/etc/init.d/go-ethereum":
@@ -81,8 +88,14 @@ class go-ethereum {
 
   ufw::allow { 'open-port-go-ethereum': port => $inbound_port }
 
+  if ($gui == 'true') {
+    $service = "stopped"
+  } else {
+    $service = "running"
+  }
+
   service { "go-ethereum":
-    ensure    => "running",
+    ensure    => $service,
     provider  => "upstart",
     require   => [
       File["/etc/init.d/go-ethereum"],

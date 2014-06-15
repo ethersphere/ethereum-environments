@@ -38,6 +38,8 @@ class cpp-ethereum {
       ensure => latest,
     }
     $all_deps = [$deps, $gui_deps]
+  } else {
+    $all_deps = $deps
   }
 
   $download_dir = "/tmp/"

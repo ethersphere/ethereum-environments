@@ -21,27 +21,26 @@ class golang(
     require => Package['golang']
   }
 
-  define compile ($source, $binary) {
-    exec { 'get':
+  define compile ($source, $branch) {
+    exec { "get $source":
       environment => "GOPATH=${Golang::gopath}",
       command => "go get -v ${source}",
       require => [Package['golang', 'git'],File[$Golang::gopathdirs]]
     }
     $build_path = "${Golang::gopath}/src/${source}"
-    exec { 'build':
+    exec { "build $source":
       environment => "GOPATH=${Golang::gopath}",
       cwd => $build_path,
-      unless => "ls $build_path/$binary",
-      command => "go build -v",
-      require => Exec['get']
+      command => "git checkout ${branch}; go build -v",
+      require => Exec["get $source"]
     }
   }
 
-  define install ($source, $binary, $destination) {
+  define install ($source, $binary, $destination, $branch) {
 
     golang::compile { $binary:
       source => $source,
-      binary => $binary
+      branch => $branch
     }
 
     file { $destination:
