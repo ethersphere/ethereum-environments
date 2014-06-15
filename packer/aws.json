@@ -3,10 +3,14 @@
         "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
         "aws_secret_key": "{{env `AWS_SECRET_KEY`}}",
         "aws_security_group_id": "{{env `AWS_SECURITY_GROUP_ID`}}",
-        "rootdir": ".",
-        "nodename": "ethereum",
         "source_ami": "ami-335da344",
-        "instance_type": "m1.small"
+        "instance_type": "m1.small",
+        "rootdir": ".",
+        "name": "go-ethereum",
+        "node": "go-ethereum",
+        "gui": "false",
+        "branch": "master",
+        "fqdn": ""
     },
 
     "builders": [{
@@ -17,7 +21,7 @@
         "source_ami": "{{user `source_ami`}}",
         "instance_type": "{{user `instance_type`}}",
         "ssh_username": "ubuntu",
-        "ami_name": "{{user `nodename`}} {{timestamp}}",
+        "ami_name": "{{user `name`}} {{isotime | clean_ami_name}}",
         "security_group_id": "{{user `aws_security_group_id`}}"
     }],
 
@@ -32,21 +36,24 @@
         ]
     }, {
         "type": "puppet-masterless",
-        "manifest_file": "{{user `rootdir`}}/puppet/manifests/{{user `nodename`}}.pp",
+        "manifest_file": "{{user `rootdir`}}/puppet/manifests/{{user `node`}}.pp",
         "module_paths": ["{{user `rootdir`}}/puppet/modules"],
         "manifest_dir": "{{user `rootdir`}}/puppet/manifests",
         "hiera_config_path": "{{user `rootdir`}}/puppet/hiera.yaml",
         "staging_directory": "/tmp/packer-puppet/",
         "facter": {
             "fqdn": "",
-            "build": "head",
-            "hostname": "{{user `nodename`}}",
+            "gui" : "{{user `gui`}}",
+            "branch" : "{{user `branch`}}",
+            "hostname": "{{user `name`}}",
+            "nodename": "{{user `name`}}",
+            "fqdn": "{{user `fqdn`}}",
             "environment": "aws"
         }
     }],
     "post-processors": [{
         "type": "vagrant",
         "keep_input_artifact": true,
-        "output": "{{user `rootdir`}}/boxes/{{user `nodename`}}.aws.box"
+        "output": "{{user `rootdir`}}/boxes/aws-{{user `name`}}.box"
     }]
 }
