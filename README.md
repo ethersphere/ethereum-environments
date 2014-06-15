@@ -68,9 +68,11 @@ the same for remote aws instances:
 
 ### System service
 
-After the VM is provisioned with puppet, the ethereum client will be running as a system service using upstart. The clients use data directory in `/usr/local/share/cpp-ethereum/` or `/usr/local/share/go-ethereum/` and logging in `/var/log/go-ethereum/cpp-ethereum.log` or `/var/log/go-ethereum/go-ethereum.log`. These locations can be reset in `puppet/hiera/common.yaml`.
+After the VM is provisioned with puppet, the ethereum client will be running as a system service using upstart. The clients use data directory in `/usr/local/share/cpp-ethereum/` or `/usr/local/share/go-ethereum/` and logging in `/var/log/go-ethereum/cpp-ethereum.log` or `/var/log/go-ethereum/go-ethereum.log`. These locations can be reset in `puppet/hiera/common.yaml`. The ethereum client service logs can be viewed on the vm as ethereum user:
 
-### GUI client 
+    sudo su ethereum tail -f /var/log/go-ethereum/go-ethereum.log
+
+### GUI client  
 
 By default the GUI client is not installed. You can choose to install the GUI client by setting the ETH_GUI variable (passed to puppet as the gui facter variable). 
 

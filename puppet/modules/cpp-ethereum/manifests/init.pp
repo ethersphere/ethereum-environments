@@ -22,20 +22,23 @@ class cpp-ethereum {
     'libcurl4-openssl-dev'
   ]
 
-  # $gui_deps = [
-  #   'qtbase5-dev',
-  #   'qt5-default',
-  #   'qtdeclarative5-dev',
-  #   'libqt5webkit5-dev'
-  # ]
+  $gui_deps = [
+    'qtbase5-dev',
+    'qt5-default',
+    'qtdeclarative5-dev',
+    'libqt5webkit5-dev'
+  ]
 
   package { [$deps]:
     ensure => latest,
   }
 
-  # package { [$gui_deps]:
-  #   ensure => latest,
-  # }
+  if ($gui == 'true') {
+    package { [$gui_deps]:
+      ensure => latest,
+    }
+    $all_deps = [$deps, $gui_deps]
+  }
 
   $download_dir = "/tmp/"
 
@@ -47,7 +50,7 @@ class cpp-ethereum {
 
   exec { 'download':
     cwd => $download_dir,
-    command => "git clone https://github.com/ethereum/cpp-ethereum; cd cpp-ethereum; mkdir -p $build_path",
+    command => "git clone https://github.com/ethereum/cpp-ethereum; cd cpp-ethereum; git checkout $branch; mkdir -p $build_path",
     require => File[$download_dir]
   }
 
@@ -67,18 +70,22 @@ make dynamic;
 sudo make install || echo # cos no exe built
 ",
     timeout => 0, # this can take looong
-    require => [Package[$deps],File[$download_dir]]
+    require => [Package[$all_deps],File[$download_dir]]
   }
 
   $ethereum = 'cpp-ethereum'
-  $build_flags = '-DCMAKE_BUILD_TYPE=Release -DHEADLESS=1 -DCMAKE_THREAD_LIBS_INIT=pthread'
+
+  if ($gui == 'true') {
+    $build_flags = '-DCMAKE_BUILD_TYPE=Release -DHEADLESS=1 -DCMAKE_THREAD_LIBS_INIT=pthread'
+  } else {
+    $build_flags = '-DCMAKE_BUILD_TYPE=Release -DCMAKE_THREAD_LIBS_INIT=pthread'
+  }
 
   exec { 'build':
     cwd => $build_path,
     command => "cmake .. ${build_flags}; make; make install",
     timeout => 0, # this can take looong
     require => [Package[$deps],Exec['cryptopp']],
-    notify => Service['cpp-ethereum'],
   }
 
   $daemon_path = hiera('cpp-ethereum::cli_path')
@@ -111,8 +118,14 @@ sudo make install || echo # cos no exe built
 
   ufw::allow { 'open-port-cpp-ethereum': port => $inbound_port }
 
+  if ($gui == 'true') {
+    $service = "stopped"
+  } else {
+    $service = "running"
+  }
+
   service { "cpp-ethereum":
-    ensure    => "running",
+    ensure    => $service,
     provider  => "upstart",
     require   => [
       File["/etc/init.d/cpp-ethereum"],
